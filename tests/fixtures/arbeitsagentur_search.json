@@ -1,0 +1,47 @@
+{
+  "ergebnisliste": [
+    {
+      "stellenangebotsart": "ARBEIT",
+      "stellenangebotsTitel": "Datenanalyst (m/w/d)",
+      "stellenlokationen": [
+        {"adresse": {"plz": "20095", "ort": "Hamburg", "region": "HAMBURG", "land": "DEUTSCHLAND"}, "breite": 53.55, "laenge": 9.99}
+      ],
+      "homeofficemoeglich": false,
+      "veroeffentlichungszeitraum": {"von": "2026-11-03"},
+      "datumErsteVeroeffentlichung": "2026-11-03",
+      "hauptberuf": "Data Analyst",
+      "firma": "Stadtwerke Elbtal",
+      "referenznummer": "10000-0000000001-S"
+    },
+    {
+      "stellenangebotsart": "ARBEIT",
+      "stellenangebotsTitel": "Data Scientist – Trainee Program",
+      "stellenlokationen": [
+        {"adresse": {"plz": "80331", "ort": "München", "region": "BAYERN", "land": "DEUTSCHLAND"}}
+      ],
+      "homeofficemoeglich": true,
+      "homeofficetyp": "NACH_VEREINBARUNG",
+      "veroeffentlichungszeitraum": {"von": "2026-11-02"},
+      "datumErsteVeroeffentlichung": "2026-11-02",
+      "hauptberuf": "Data Scientist",
+      "firma": "Hanse Versicherung AG",
+      "referenznummer": "10000-0000000002-S",
+      "externeURL": "https://example.com/apply/2"
+    },
+    {
+      "stellenangebotsart": "ARBEIT",
+      "stellenangebotsTitel": "KI-Ingenieur (m/w/d) Berufseinsteiger",
+      "stellenlokationen": [
+        {"adresse": {"ort": "Frankfurt am Main", "land": "DEUTSCHLAND"}}
+      ],
+      "veroeffentlichungszeitraum": {"von": "2026-11-03"},
+      "hauptberuf": "KI-Engineer",
+      "chiffrenummer": "5156",
+      "referenznummer": "10000-0000000003-S"
+    }
+  ],
+  "maxErgebnisse": 3,
+  "page": 1,
+  "size": 100,
+  "woOutput": {"bereinigterOrt": "Deutschland", "suchmodus": "LANDSUCHE"}
+}

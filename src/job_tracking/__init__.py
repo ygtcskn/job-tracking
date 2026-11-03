@@ -1,2 +1,7 @@
+"""Hourly job-posting tracker that writes new postings to a styled Excel sheet."""
+
+
 def main() -> None:
-    print("Hello from job-tracking!")
+    from .cli import main as cli_main
+
+    raise SystemExit(cli_main())

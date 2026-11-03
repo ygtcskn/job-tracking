@@ -1,0 +1,76 @@
+# Job Tracking settings.
+# Paths are relative to this file. Times in the sheet use `timezone`.
+
+timezone = "Europe/Istanbul"
+
+[output]
+workbook = "jobs.xlsx"
+# Used when jobs.xlsx is open in Excel: new rows go here until the next run
+# that finds jobs.xlsx closed, then they are merged in and this file is removed.
+pending_workbook = "jobs_pending.xlsx"
+data_dir = "data"
+log_dir = "logs"
+# Rows fetched longer ago than this are left out of the sheet (they stay in the database).
+max_age_days = 30
+
+[search]
+# Every source searches each of these.
+keywords = [
+    "Data Analyst",
+    "Data Scientist",
+    "Machine Learning Engineer",
+    "AI Engineer",
+    "Machine Learning Researcher",
+    "Datenanalyst",
+    "KI Ingenieur",
+]
+# Used for the Country column when a source doesn't name a country.
+country = "Germany"
+# Keep a job only if its title contains one of these whole words or phrases
+# (case-insensitive). Leave empty to keep every title.
+title_include = [
+    "data", "daten", "datenanalyst", "datenanalystin", "datenanalyse", "analyst", "analytics",
+    "scientist", "machine learning", "ml", "ai", "ki", "künstliche intelligenz",
+    "artificial intelligence", "nlp", "computer vision", "deep learning",
+    "business intelligence", "bi", "statistik", "statistiker", "statistician",
+    "genai", "llm", "llms",
+]
+# Drop a job if its title contains one of these whole words (case-insensitive).
+# Thesis positions are left out because they need student enrollment.
+title_exclude = [
+    "senior", "sr", "lead", "head", "principal", "staff", "director",
+    "teamleiter", "teamleiterin", "teamleitung", "leiter", "leiterin", "leitung",
+    "masterarbeit", "bachelorarbeit", "abschlussarbeit", "thesis",
+]
+# Ignore postings older than this many days.
+max_posted_age_days = 3
+
+[sources.linkedin]
+enabled = true
+location = "Germany"
+# LinkedIn experience levels: 1 = Internship, 2 = Entry level, 3 = Associate.
+experience_levels = [1, 2]
+posted_within_hours = 24
+# 10 jobs per page. Paging stops early once a page has nothing new.
+max_pages = 3
+# Pause between requests, to stay under LinkedIn's rate limit.
+delay_seconds = 2.0
+
+[sources.arbeitsagentur]
+enabled = true
+where = "Deutschland"
+# 1 = job, 34 = internship / trainee.
+offer_types = [1, 34]
+published_within_days = 1
+page_size = 100
+max_pages = 3
+
+[sources.google]
+# Google Jobs is read through SerpApi (https://serpapi.com), which needs an API key.
+# Put SERPAPI_API_KEY=... in a .env file next to this one. Without a key this source is skipped.
+enabled = true
+api_key_env = "SERPAPI_API_KEY"
+location = "Germany"
+# Each keyword costs one SerpApi search, so this source runs less often than the others.
+every_hours = 24
+max_pages = 1

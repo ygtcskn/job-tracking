@@ -1,0 +1,25 @@
+{
+  "search_metadata": {"status": "Success"},
+  "jobs_results": [
+    {
+      "title": "Praktikum Data Science (m/w/d)",
+      "company_name": "Alpenmobil GmbH",
+      "location": "Munich, Germany",
+      "via": "Alpenmobil Careers",
+      "share_link": "https://www.google.com/search?q=dummy-job-1&ibp=htl;jobs",
+      "extensions": ["9 hours ago", "Internship", "Hybrid"],
+      "detected_extensions": {"posted_at": "9 hours ago", "schedule_type": "Internship"},
+      "job_id": "eyJqb2JfdGl0bGUiOiJkdW1teS0xIn0="
+    },
+    {
+      "title": "ML Researcher – Computer Vision",
+      "company_name": "Vierlande Research Lab",
+      "location": "Anywhere",
+      "via": "LinkedIn",
+      "share_link": "https://www.google.com/search?q=dummy-job-2&ibp=htl;jobs",
+      "extensions": ["1 day ago", "Full-time", "Work from home"],
+      "detected_extensions": {"posted_at": "1 day ago", "schedule_type": "Full-time", "work_from_home": true},
+      "job_id": "eyJqb2JfdGl0bGUiOiJkdW1teS0yIn0="
+    }
+  ]
+}
