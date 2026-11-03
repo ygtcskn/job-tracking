@@ -8,8 +8,8 @@ import pytest
 
 from job_tracking.config import Config, load_config
 
-FIXTURES = Path(__file__).parent / "fixtures"
-REPO_ROOT = Path(__file__).parent.parent
+FIXTURES = Path(__file__).resolve().parent / "fixtures"
+REPO_ROOT = Path(__file__).resolve().parent.parent
 TZ = ZoneInfo("Europe/Istanbul")
 
 BASE_CONFIG = """

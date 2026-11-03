@@ -4,10 +4,39 @@ Collects new entry-level data / ML / AI job postings in Germany every hour from
 **LinkedIn**, the **Arbeitsagentur** and **Google Jobs**, and writes them to `jobs.xlsx`
 in the layout of [`jobs_mockup.xlsx`](jobs_mockup.xlsx).
 
+Works on Windows and macOS.
+
+## Setup
+
+**Windows** (in PowerShell):
+
+```powershell
+winget install --id Git.Git -e
+```
+
+```powershell
+powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"
+```
+
+Close and reopen PowerShell, then:
+
+```powershell
+git clone https://github.com/ygtcskn/job-tracking.git
+cd job-tracking
+```
+
+**macOS**:
+
+```bash
+curl -LsSf https://astral.sh/uv/install.sh | sh
+git clone https://github.com/ygtcskn/job-tracking.git && cd job-tracking
+```
+
+`uv` installs the right Python version and all packages by itself on first run.
+
 ## Quick start
 
 ```bash
-uv sync
 uv run job-tracking run            # fetch new jobs and write jobs.xlsx
 uv run job-tracking run --dry-run  # just list what would be added
 ```
@@ -62,14 +91,21 @@ If one source fails (rate limit, network error), the run still finishes with the
 
 ## Running every hour
 
-On macOS, from the main checkout (not a temporary worktree):
+From the project folder (not a temporary git worktree):
 
 ```bash
 uv run job-tracking schedule install
 ```
 
-This adds a launchd agent (`~/Library/LaunchAgents/local.job-tracking.plist`) that runs
-`job-tracking run` at minute 0 of every hour. If the Mac was asleep, it runs once on wake.
+It runs `job-tracking run` at minute 0 of every hour. If the computer was asleep, it runs
+once when it wakes up.
+
+- **Windows:** adds a Task Scheduler task named `job-tracking` (no admin rights needed). It runs
+  only while you're signed in, without opening a window, and also on battery. Results and
+  errors go to `logs\job-tracking.log`. You can see it in the Task Scheduler app.
+- **macOS:** adds a launchd agent (`~/Library/LaunchAgents/local.job-tracking.plist`).
+
+Run the install again after moving the project folder.
 
 ```bash
 uv run job-tracking schedule status
@@ -110,4 +146,6 @@ uv run pytest
 ```
 
 Tests use small made-up fixtures in `tests/fixtures/` shaped like each source's real
-responses, and check the sheet's styling against `jobs_mockup.xlsx`.
+responses, and check the sheet's styling against `jobs_mockup.xlsx`. GitHub runs them on
+Windows and macOS on every push (`.github/workflows/tests.yml`); on Windows that includes
+registering and removing a real Task Scheduler task.

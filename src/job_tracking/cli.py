@@ -18,6 +18,7 @@ log = logging.getLogger("job_tracking")
 
 
 def main(argv: list[str] | None = None) -> int:
+    _make_console_safe()
     parser = argparse.ArgumentParser(
         prog="job-tracking",
         description="Collect new job postings and write them to an Excel sheet.",
@@ -41,7 +42,9 @@ def main(argv: list[str] | None = None) -> int:
 
     commands.add_parser("render", help="rewrite the sheet from saved jobs, without fetching")
 
-    sched = commands.add_parser("schedule", help="run every hour with macOS launchd")
+    sched = commands.add_parser(
+        "schedule", help="run every hour (launchd on macOS, Task Scheduler on Windows)"
+    )
     sched.add_argument("action", choices=["install", "uninstall", "status"])
 
     # Let `--config`/`-v` also work after the subcommand.
@@ -76,29 +79,44 @@ def main(argv: list[str] | None = None) -> int:
             return 1
         return 0
 
-    if args.command == "render":
-        with Store(db_path(config)) as store:
-            result = publish(store, config, datetime.now(config.timezone))
-        print(result.message)
-        return 0
-
     try:
+        if args.command == "render":
+            with Store(db_path(config)) as store:
+                result = publish(store, config, datetime.now(config.timezone))
+            print(result.message)
+            return 0
         report = run(config, only=set(args.source) if args.source else None, dry_run=args.dry_run)
     except AlreadyRunning as exc:
         log.warning("%s; skipping this run", exc)
         print(exc, file=sys.stderr)
         return 1
+    except Exception:
+        # Scheduled runs have no console, so make sure the error lands in the log file.
+        log.exception("%s failed", args.command)
+        return 1
     print_report(report, dry_run=args.dry_run)
     return 1 if report.all_failed else 0
+
+
+def _make_console_safe() -> None:
+    """Never crash on printing a job title the console can't show (e.g. a Windows code page)."""
+    for stream in (sys.stdout, sys.stderr):
+        reconfigure = getattr(stream, "reconfigure", None)
+        if reconfigure is not None:
+            try:
+                reconfigure(errors="backslashreplace")
+            except (ValueError, OSError):
+                pass
 
 
 def setup_logging(config: Config, verbose: bool) -> None:
     root = logging.getLogger()
     root.setLevel(logging.DEBUG)
-    console = logging.StreamHandler(sys.stderr)
-    console.setLevel(logging.DEBUG if verbose else logging.WARNING)
-    console.setFormatter(logging.Formatter("%(levelname)s %(message)s"))
-    root.addHandler(console)
+    if sys.stderr is not None:  # None when started windowless (pythonw.exe) by Task Scheduler
+        console = logging.StreamHandler(sys.stderr)
+        console.setLevel(logging.DEBUG if verbose else logging.WARNING)
+        console.setFormatter(logging.Formatter("%(levelname)s %(message)s"))
+        root.addHandler(console)
 
     config.output.log_dir.mkdir(parents=True, exist_ok=True)
     file_handler = RotatingFileHandler(

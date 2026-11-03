@@ -2,8 +2,8 @@
 
 from __future__ import annotations
 
-import fcntl
 import logging
+import sys
 from collections import Counter
 from contextlib import contextmanager
 from dataclasses import dataclass, field
@@ -60,19 +60,44 @@ def db_path(config: Config) -> Path:
     return config.output.data_dir / "jobs.db"
 
 
+if sys.platform == "win32":
+    import msvcrt
+
+    def _lock(handle) -> None:
+        handle.seek(0)
+        msvcrt.locking(handle.fileno(), msvcrt.LK_NBLCK, 1)
+
+    def _unlock(handle) -> None:
+        handle.seek(0)
+        msvcrt.locking(handle.fileno(), msvcrt.LK_UNLCK, 1)
+
+else:
+    import fcntl
+
+    def _lock(handle) -> None:
+        fcntl.flock(handle, fcntl.LOCK_EX | fcntl.LOCK_NB)
+
+    def _unlock(handle) -> None:
+        fcntl.flock(handle, fcntl.LOCK_UN)
+
+
 @contextmanager
 def run_lock(config: Config) -> Iterator[None]:
-    """Stop two runs from overlapping (e.g. a slow run still going when the next hour starts)."""
+    """Stop two runs from overlapping (e.g. a slow run still going when the next hour starts).
+
+    The OS releases the lock if the process dies, so a crash never leaves it stuck.
+    """
     config.output.data_dir.mkdir(parents=True, exist_ok=True)
-    with open(config.output.data_dir / "run.lock", "w") as handle:
+    # "a+" so opening never truncates a file another run has locked (Windows refuses that).
+    with open(config.output.data_dir / "run.lock", "a+") as handle:
         try:
-            fcntl.flock(handle, fcntl.LOCK_EX | fcntl.LOCK_NB)
-        except BlockingIOError as exc:
+            _lock(handle)
+        except OSError as exc:
             raise AlreadyRunning("Another run is still in progress") from exc
         try:
             yield
         finally:
-            fcntl.flock(handle, fcntl.LOCK_UN)
+            _unlock(handle)
 
 
 def run(
