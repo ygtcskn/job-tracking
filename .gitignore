@@ -1,0 +1,20 @@
+# Python-generated files
+__pycache__/
+*.py[oc]
+build/
+dist/
+wheels/
+*.egg-info
+
+# Virtual environments
+.venv
+
+# OS / IDE
+.DS_Store
+.idea/
+
+# Pipeline outputs and state (generated, not committed)
+jobs.xlsx
+jobs_pending.xlsx
+data/
+logs/
